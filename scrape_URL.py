@@ -3,7 +3,13 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException, TimeoutException, StaleElementReferenceException
+from pymongo import MongoClient
 import time
+
+# Verbindung zu MongoDB herstellen
+client = MongoClient("mongodb+srv://joelegli:test@nutritionbase.rx1ko0e.mongodb.net/")
+db = client["NutritionBase"]
+collection = db["URL_Liste"]  # Ändert den Sammlungsnamen, wenn nötig
 
 # Starte den Chrome Browser
 driver = webdriver.Chrome()
@@ -36,34 +42,35 @@ while True:
         break
 
 try:
-    while True:
-        foods = driver.find_elements(By.CSS_SELECTOR, "a.results--food.ng-star-inserted")
-        if not foods:
-            print("Keine weiteren Lebensmittel gefunden.")
-            break
-
-        for index, food in enumerate(foods):
-            try:
-                # Um 'stale element reference' zu vermeiden, finde das Element jedes Mal neu
-                food = driver.find_elements(By.CSS_SELECTOR, "a.results--food.ng-star-inserted")[index]
-                food.click()
-                print(driver.current_url)
-            except StaleElementReferenceException:
-                print("Element nicht mehr im DOM, erneuter Versuch...")
-                continue
-
-        # Versuche, "WEITERE 20 LADEN" zu klicken, um mehr Elemente zu laden
-        #try:
-            #load_more_button = driver.find_element(By.CSS_SELECTOR, "button.dataScroller-button")
-
-            #load_more_button.click()
-            #time.sleep(2)
-        #except (NoSuchElementException, TimeoutException):
-            #print("Keine 'WEITERE 20 LADEN' Schaltfläche gefunden oder Ende der Liste erreicht.")
-            #break
-
+    gesammelte_urls = []
     
-    #print("Fertig mit dem Anklicken aller Nahrungsmittel.")
+    foods = driver.find_elements(By.CSS_SELECTOR, "a.results--food.ng-star-inserted")
+    if not foods:
+        print("Keine weiteren Lebensmittel gefunden.")
+
+    for index, food in enumerate(foods):
+        # Um 'stale element reference' zu vermeiden, finde das Element jedes Mal neu
+        food = driver.find_elements(By.CSS_SELECTOR, "a.results--food.ng-star-inserted")[index]
+        food.click()
+
+        # Speichere die aktuelle URL in der Liste
+        gesammelte_urls.append(driver.current_url)
+        print(driver.current_url)
+
+    # Füge jede URL in die Datenbank ein, wenn sie noch nicht vorhanden ist
+    for url in gesammelte_urls:
+        result = collection.update_one(
+            {"url": url},  # Suchkriterium
+            {"$setOnInsert": {"url": url}},  # Nur setzen, wenn ein neues Dokument eingefügt wird
+            upsert=True  # Fügt ein neues Dokument ein, wenn keines gefunden wird, das den Kriterien entspricht
+        )
+
+        if result.upserted_id:
+            print("Neue URL hinzugefügt:", url)
+        else:
+            print("URL existiert bereits in der Datenbank.")
+
+    print("Alle URLs wurden erfolgreich verarbeitet.")
 
 finally:
     # Schließe den Browser
