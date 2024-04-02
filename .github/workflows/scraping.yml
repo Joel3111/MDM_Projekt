@@ -1,0 +1,25 @@
+name: Automatisiertes Scraping
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Führt das Skript täglich um Mitternacht UTC aus
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest  # Definiert die Ausführungsumgebung
+
+    steps:
+    - name: Repository auschecken
+      uses: actions/checkout@v2  # Holt den neuesten Code aus eurem Repository
+
+    - name: Python einrichten
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'  # Definiert die Python-Version
+
+    - name: Abhängigkeiten installieren
+      run: |
+        pip install -r requirements.txt  # Installiert benötigte Python-Pakete
+
+    - name: Scraping-Skript ausführen
+      run: python path/to/your_script.py  # Pfad zu eurem Scraping-Skript

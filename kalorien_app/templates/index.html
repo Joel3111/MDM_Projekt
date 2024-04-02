@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalorienschätzung</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h2>Kalorienschätzung</h2>
+        <form action="/predict" method="post">
+            <div class="form-group">
+                <label for="protein">Protein (g):</label>
+                <input type="text" class="form-control" name="protein">
+            </div>
+            <div class="form-group">
+                <label for="fett">Fett (g):</label>
+                <input type="text" class="form-control" name="fett">
+            </div>
+            <div class="form-group">
+                <label for="kohlenhydrate">Kohlenhydrate (g):</label>
+                <input type="text" class="form-control" name="kohlenhydrate">
+            </div>
+            <button type="submit" class="btn btn-primary">Schätzen</button>
+        </form>
+
+        {% if prediction_text %}
+        <h3>{{ prediction_text }}</h3>
+        {% endif %}
+    </div>
+</body>
+</html>
