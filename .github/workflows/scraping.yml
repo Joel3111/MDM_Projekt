@@ -1,25 +1,32 @@
-name: Automatisiertes Scraping
+name: Automatisierte Datenextraktion und Modelltraining
 
 on:
-  schedule:
-    - cron: '0 0 * * *'  # Führt das Skript täglich um Mitternacht UTC aus
+  push:
 
 jobs:
-  scrape:
-    runs-on: ubuntu-latest  # Definiert die Ausführungsumgebung
+  build:
+    runs-on: ubuntu-latest
 
     steps:
-    - name: Repository auschecken
-      uses: actions/checkout@v2  # Holt den neuesten Code aus eurem Repository
+    - name: Checkout Repository
+      uses: actions/checkout@v3
 
-    - name: Python einrichten
-      uses: actions/setup-python@v2
+    - name: Set up Python
+      uses: actions/setup-python@v4
       with:
-        python-version: '3.8'  # Definiert die Python-Version
+        python-version: '3.12.1' 
 
-    - name: Abhängigkeiten installieren
+    - name: Install Dependencies
       run: |
-        pip install -r requirements.txt  # Installiert benötigte Python-Pakete
+        pip install -r requirements.txt
 
-    - name: Scraping-Skript ausführen
-      run: python path/to/your_script.py  # Pfad zu eurem Scraping-Skript
+    - name: Scrape URLs
+      run: python Backend/scrape_URL.py
+      working-directory: ${{ github.workspace }}/Backend
+
+    - name: Scrape Nutrition Data
+      run: python Backend/scraper_Nutrition.py
+      working-directory: ${{ github.workspace }}/Backend
+
+    - name: Train Model
+      run: python train_model.py
