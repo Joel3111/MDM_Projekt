@@ -2,6 +2,9 @@ import os
 from flask import Flask, request, render_template
 import joblib
 import pandas as pd
+from scrape_URL import scrape_data  
+from scraper_Nutrition import process_data
+from train_model import create_model
 
 app = Flask(__name__)
 
@@ -17,6 +20,32 @@ def home():
     input_values = {'protein': '', 'fett': '', 'kohlenhydrate': '', 'nahrungsfasern': ''}
     return render_template('index.html', input_values=input_values)
 
+@app.route('/run-URLscraper')
+def run_url_scraper():
+    try:
+        # Rufe die Scraper-Funktion auf
+        scrape_data()
+        return "URL Scraper erfolgreich ausgeführt!", 200
+    except Exception as e:
+        return f"Fehler beim Ausführen des URL Scrapers: {e}", 500
+    
+@app.route('/run-Nutritionscraper')
+def run_nutrition_scraper():
+    try:
+        # Rufe die Datenverarbeitungsfunktion auf
+        process_data()
+        return "Nutrition Scraper erfolgreich ausgeführt!", 200
+    except Exception as e:
+        return f"Fehler beim Ausführen des Nutrition Scrapers: {e}", 500
+    
+@app.route('/run-model')
+def run_ml_model():
+    try:
+        # Rufe die Modelltrainingsfunktion auf
+        create_model()
+        return "Modelltraining erfolgreich ausgeführt!", 200
+    except Exception as e:
+        return f"Fehler beim Ausführen des Modelltrainings: {e}", 500
 
 @app.route('/predict', methods=['POST'])
 def predict():

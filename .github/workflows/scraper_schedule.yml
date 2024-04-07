@@ -1,0 +1,29 @@
+name: Täglich Scraper ausführen
+
+on: 
+  workflow_dispatch:
+
+jobs:
+  trigger-scraper:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Auslösen des URL-Scrapers
+      uses: wei/curl@master
+      with:
+        args: curl -X GET http://meinkalorienapp.switzerlandnorth.azurecontainer.io:5000/run-URLscraper
+
+    - name: Wartezeit nach dem URL-Scraping
+      run: sleep 2h  # Warte 2 Stunde
+
+    - name: Auslösen des Nutrition-Scrapers
+      uses: wei/curl@master
+      with:
+        args: curl -X GET http://meinkalorienapp.switzerlandnorth.azurecontainer.io:5000/run-Nutritionscraper
+
+    - name: Wartezeit nach dem Nutrition-Scraping
+      run: sleep 5h  # Warte 5 Stunden
+
+    - name: Auslösen des Modell-Trainings
+      uses: wei/curl@master
+      with:
+        args: curl -X GET http://meinkalorienapp.switzerlandnorth.azurecontainer.io:5000/run-model
