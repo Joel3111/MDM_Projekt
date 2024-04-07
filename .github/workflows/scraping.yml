@@ -20,13 +20,6 @@ jobs:
       run: |
         pip install -r requirements.txt
 
-    - name: Scrape URLs
-      run: python scrape_URL.py
-      working-directory: ${{ github.workspace }}/Backend
-
-    - name: Scrape Nutrition Data
-      run: python Backend/scraper_Nutrition.py
-      working-directory: ${{ github.workspace }}/Backend
-
     - name: Train Model
       run: python train_model.py
+      working-directory: ${{ github.workspace }}/Backend
