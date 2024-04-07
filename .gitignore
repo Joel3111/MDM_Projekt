@@ -4,6 +4,7 @@ __pycache__/
 *$py.class
 test.py
 testpfeilklick.py
+Screenshots/
 
 # C extensions
 *.so
