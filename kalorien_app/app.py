@@ -13,7 +13,10 @@ model = joblib.load(model_path)  # Lade das Modell
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+    # Definiere einen leeren Zustand für input_values
+    input_values = {'protein': '', 'fett': '', 'kohlenhydrate': '', 'nahrungsfasern': ''}
+    return render_template('index.html', input_values=input_values)
+
 
 @app.route('/predict', methods=['POST'])
 def predict():
