@@ -21,7 +21,7 @@ jobs:
         pip install -r requirements.txt
 
     - name: Scrape URLs
-      run: python Backend/scrape_URL.py
+      run: python scrape_URL.py
       working-directory: ${{ github.workspace }}/Backend
 
     - name: Scrape Nutrition Data
